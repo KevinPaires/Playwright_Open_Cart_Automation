@@ -2,19 +2,7 @@
 
 A comprehensive e-commerce test automation suite built with **Playwright** and **JavaScript**, implementing the **Page Object Model (POM)** design pattern for maintainable and scalable test code.
 
-## 📋 Table of Contents
 
-- [Features](#features)
-- [Technologies](#technologies)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Running Tests](#running-tests)
-- [Test Coverage](#test-coverage)
-- [Page Objects](#page-objects)
-- [Configuration](#configuration)
-- [Contributing](#contributing)
-
----
 
 ## ✨ Features
 
@@ -284,14 +272,6 @@ npx playwright test
 
 ---
 
-## 📚 Learning Resources
-
-- [Playwright Documentation](https://playwright.dev/docs/intro)
-- [Page Object Model Pattern](https://playwright.dev/docs/pom)
-- [JavaScript Testing Best Practices](https://github.com/goldbergyoni/javascript-testing-best-practices)
-
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -320,19 +300,6 @@ Contributions are welcome! Please follow these steps:
 
 - None currently tracked
 
----
-
-## 📈 Future Enhancements
-
-- [ ] Add user registration tests
-- [ ] Add login/logout tests
-- [ ] Add checkout flow tests
-- [ ] Add API testing with Playwright
-- [ ] Add visual regression testing
-- [ ] Add performance testing
-- [ ] Add CI/CD pipeline (GitHub Actions)
-- [ ] Add test data management
-- [ ] Add custom reporting
 
 ---
 
@@ -345,11 +312,6 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
 
 ## ⭐ Show your support
 
