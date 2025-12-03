@@ -41,14 +41,6 @@ class BasePage {
     await locator.click(options);
   }
 
-  // Click and wait for navigation (useful for links that navigate)
-  async clickAndWaitForNavigation(locator, options = {}) {
-    await Promise.all([
-      this.page.waitForNavigation({ waitUntil: 'networkidle', timeout: options.timeout || this.defaultTimeout }),
-      this.click(locator, options),
-    ]);
-  }
-
   // Fill input after ensuring visibility
   async fill(locator, text, options = {}) {
     await this.waitForVisible(locator, options.timeout || this.defaultTimeout);

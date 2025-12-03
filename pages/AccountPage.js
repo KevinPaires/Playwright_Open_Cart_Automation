@@ -1,29 +1,44 @@
 const { BasePage } = require('./BasePage');
 
 class AccountPage extends BasePage {
-  constructor(page) {
+  constructor(page, options = {}) {
     super(page);
 
+    // Allow overriding selectors via options while keeping sensible defaults
+    const {
+      firstNameSelector = '#input-firstname',
+      lastNameSelector = '#input-lastname',
+      emailSelector = '#input-email',
+      telephoneSelector = '#input-telephone',
+      passwordSelector = '#input-password',
+      confirmPasswordSelector = '#input-confirm',
+      agreeCheckboxSelector = 'input[name="agree"]',
+      continueButtonName = 'Continue',
+      successMessageText = 'successfully created',
+      fieldErrorsSelector = '.text-danger',
+      accountHeadingSelector = 'h1',
+      logoutLinkText = 'Logout',
+    } = options;
+
     // Registration form locators
-    this.firstNameInput = page.locator('#input-firstname');
-    this.lastNameInput = page.locator('#input-lastname');
-    this.emailInput = page.locator('#input-email');
-    this.telephoneInput = page.locator('#input-telephone');
-    this.passwordInput = page.locator('#input-password');
-    this.confirmPasswordInput = page.locator('#input-confirm');
+    this.firstNameInput = page.locator(firstNameSelector);
+    this.lastNameInput = page.locator(lastNameSelector);
+    this.emailInput = page.locator(emailSelector);
+    this.telephoneInput = page.locator(telephoneSelector);
+    this.passwordInput = page.locator(passwordSelector);
+    this.confirmPasswordInput = page.locator(confirmPasswordSelector);
 
     // Agreement and submit
-    this.agreeCheckbox = page.locator('input[name="agree"]');
-    this.continueButton = page.getByRole('button', { name: 'Continue' })
+    this.agreeCheckbox = page.locator(agreeCheckboxSelector);
+    this.continueButton = page.getByRole('button', { name: continueButtonName });
 
     // Success/error messages
-    this.successMessage = page.getByText('successfully created', { exact: false });
-    this.fieldErrors = page.locator('.text-danger');
-
+    this.successMessage = page.getByText(successMessageText, { exact: false });
+    this.fieldErrors = page.locator(fieldErrorsSelector);
 
     // Account page elements
-    this.accountHeading = page.locator('h1');
-    this.logoutLink = page.locator('text=Logout');
+    this.accountHeading = page.locator(accountHeadingSelector);
+    this.logoutLink = page.locator(`text=${logoutLinkText}`);
   }
 
   async goto() {
@@ -67,25 +82,8 @@ class AccountPage extends BasePage {
   }
 
   async clickContinue() {
-    try {
-      await this.click(this.continueButton);
-    } catch {
-      // Fallback: try pressing Enter on the last visible input
-      const inputs = this.page.locator('input[type="text"], input[type="email"], input[type="password"]');
-      await inputs.last().press('Enter');
-    }
-    // Wait for page to navigate or show success/error
-    await this.page.waitForTimeout(1000);
-    try {
-      await this.waitForVisible(this.successMessage, 3000);
-    } catch {
-      // If no success message, wait for page load
-      try {
-        await this.waitForPageLoad();
-      } catch {
-        // Page may have already loaded
-      }
-    }
+    await this.click(this.continueButton);
+    await this.waitForPageLoad();
   }
 
   async registerAccount(firstName, lastName, email, telephone, password) {
@@ -100,7 +98,7 @@ class AccountPage extends BasePage {
   }
 
   async isSuccessMessageVisible() {
-    return await this.isVisible(this.successMessage, 5000);
+    return await this.isVisible(this.successMessage);
   }
 
   async getSuccessMessage() {
@@ -112,15 +110,20 @@ class AccountPage extends BasePage {
   }
 
   async getErrorMessage() {
-    return await this.getText(this.errorMessage);
+    // Return first error message found
+    const errorText = await this.getText(this.fieldErrors);
+    return errorText || '';
   }
 
   async isWarningMessageVisible() {
-    return await this.isVisible(this.warningMessage, 3000);
+    // Check if there are any field errors displayed
+    return await this.fieldErrors.count() > 0;
   }
 
   async getWarningMessage() {
-    return await this.getText(this.warningMessage);
+    // Return field error message if present
+    const errorText = await this.getText(this.fieldErrors);
+    return errorText || '';
   }
 
   async logout() {
@@ -130,7 +133,7 @@ class AccountPage extends BasePage {
 
   async isLoggedIn() {
     try {
-      return await this.isVisible(this.logoutLink, 2000);
+      return await this.isVisible(this.logoutLink);
     } catch {
       return false;
     }
