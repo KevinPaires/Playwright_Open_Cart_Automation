@@ -1,7 +1,9 @@
-class HomePage {
+const { BasePage } = require('./BasePage');
+
+class HomePage extends BasePage {
   constructor(page) {
-    this.page = page;
-    
+    super(page);
+
     // Locators
     this.logo = page.locator('#logo');
     this.searchInput = page.locator('input[name="search"]');
@@ -16,26 +18,27 @@ class HomePage {
   }
 
   async goto() {
-    await this.page.goto('/');
+    await super.goto('/');
   }
 
   async searchProduct(productName) {
-    await this.searchInput.fill(productName);
-    await this.searchButton.click();
+    await this.fill(this.searchInput, productName);
+    await this.click(this.searchButton);
+    await this.waitForPageLoad();
   }
 
   async clickMyAccount() {
-    await this.myAccountDropdown.click();
+    await this.click(this.myAccountDropdown);
   }
 
   async goToRegister() {
     await this.clickMyAccount();
-    await this.registerLink.click();
+    await this.click(this.registerLink);
   }
 
   async goToLogin() {
     await this.clickMyAccount();
-    await this.loginLink.click();
+    await this.click(this.loginLink);
   }
 
   async goToLaptops() {
@@ -43,16 +46,16 @@ class HomePage {
     await this.laptopsDropdown.hover();
     
     // Wait for dropdown to be visible
-    await this.showAllLaptops.waitFor({ state: 'visible', timeout: 5000 });
+    await this.waitForVisible(this.showAllLaptops, 5000);
     
     // Click while keeping mouse on the area
-    await this.showAllLaptops.click({ force: true });
+    await this.click(this.showAllLaptops, { force: true });
     
-    await this.page.waitForLoadState('networkidle');
+    await this.waitForPageLoad();
   }
 
   async getFeaturedProductsCount() {
-    return await this.featuredProducts.count();
+    return await this.count(this.featuredProducts);
   }
 }
 

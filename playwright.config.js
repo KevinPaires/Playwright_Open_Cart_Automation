@@ -5,7 +5,7 @@ module.exports = defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 8,
   reporter: 'html',
   
   use: {
@@ -13,8 +13,10 @@ module.exports = defineConfig({
     actionTimeout: 30000,
     navigationTimeout: 60000,
     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    trace: 'on-first-retry',
+    trace: 'on',
+    headless: true,
     screenshot: 'only-on-failure',
+    ignoreHTTPSErrors: true
   },
 
   projects: [
@@ -32,5 +34,6 @@ module.exports = defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
+
   ],
 });

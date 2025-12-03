@@ -1,6 +1,8 @@
-class SearchPage {
+const { BasePage } = require('./BasePage');
+
+class SearchPage extends BasePage {
   constructor(page) {
-    this.page = page;
+    super(page);
     
     // Locators - more specific and reliable
     this.searchResults = page.locator('.product-layout.product-grid');
@@ -14,38 +16,38 @@ class SearchPage {
   }
 
   async getResultsCount() {
-    // Wait a bit for results to load
-    await this.page.waitForTimeout(1000);
-    return await this.searchResults.count();
+    // Wait for page/network to settle, then return the number of results.
+    await this.waitForPageLoad(3000);
+    return await this.count(this.searchResults);
   }
 
   async getProductTitles() {
-    await this.page.waitForTimeout(500);
+    await this.waitForVisible(this.productTitles.first(), 3000);
     return await this.productTitles.allTextContents();
   }
 
   async clickProduct(productName) {
-    await this.page.locator(`text=${productName}`).first().click();
+    const locator = this.page.locator(`text=${productName}`).first();
+    await this.click(locator);
   }
 
   async isNoResultsDisplayed() {
     try {
-      return await this.noResultsMessage.isVisible({ timeout: 3000 });
+      return await this.isVisible(this.noResultsMessage, 3000);
     } catch {
       return false;
     }
   }
 
   async getNoResultsMessage() {
-    return await this.page.locator('#content').textContent();
+    return await this.getText(this.page.locator('#content'));
   }
 
   async searchAgain(searchTerm) {
     // Clear and fill the first search input
-    await this.searchInput.clear();
-    await this.searchInput.fill(searchTerm);
-    await this.searchButton.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.fill(this.searchInput, searchTerm);
+    await this.click(this.searchButton);
+    await this.waitForPageLoad();
   }
 }
 

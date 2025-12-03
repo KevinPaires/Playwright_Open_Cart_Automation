@@ -1,6 +1,8 @@
-class CartPage {
+const { BasePage } = require('./BasePage');
+
+class CartPage extends BasePage {
   constructor(page) {
-    this.page = page;
+    super(page);
     
     // Locators
     this.cartButton = page.locator('#cart');
@@ -9,32 +11,32 @@ class CartPage {
     this.viewCartLink = page.locator('text=View Cart');
     this.checkoutButton = page.locator('text=Checkout').first();
     
-    // Cart page elements
+    // Cart page elements (scoped to the main cart table to avoid matching dropdown)
     this.cartTable = page.locator('.table-responsive');
-    this.productRows = page.locator('tbody tr');
-    this.productNames = page.locator('tbody tr td:nth-child(2) a');
-    this.productPrices = page.locator('tbody tr td:nth-child(6)');
-    this.quantityInputs = page.locator('input[name^="quantity"]');
-    this.updateButtons = page.locator('button[data-original-title="Update"]');
-    this.removeButtons = page.locator('button[data-original-title="Remove"]');
+    this.productRows = this.cartTable.locator('tbody tr');
+    this.productNames = this.cartTable.locator('tbody tr td:nth-child(2) a');
+    this.productPrices = this.cartTable.locator('tbody tr td:nth-child(6)');
+    this.quantityInputs = this.cartTable.locator('input[name^="quantity"]');
+    this.updateButtons = this.cartTable.locator('button[data-original-title="Update"]');
+    this.removeButtons = this.cartTable.locator('button[data-original-title="Remove"]');
     
     // Totals
     this.totalRow = page.locator('.table-bordered tr').last();
   }
 
   async goto() {
-    await this.page.goto('/index.php?route=checkout/cart');
+    await super.goto('/index.php?route=checkout/cart');
   }
 
   async clickCartButton() {
-    await this.cartButton.click();
-    await this.page.waitForTimeout(500);
+    await this.click(this.cartButton);
+    await this.waitForVisible(this.cartDropdown);
   }
 
   async viewCart() {
     await this.clickCartButton();
-    await this.viewCartLink.click();
-    await this.page.waitForLoadState('networkidle');
+    await this.click(this.viewCartLink);
+    await this.waitForPageLoad();
   }
 
   async getCartItemCount() {
@@ -47,7 +49,7 @@ class CartPage {
   async getCartTotal() {
     // Get the FULL text including item count
     const text = await this.cartTotal.textContent();
-    return text.trim(); // Returns "2 item(s) - $244.00"
+    return text.trim(); 
   }
 
   async getCartTotalPrice() {
@@ -58,7 +60,8 @@ class CartPage {
   }
 
   async getProductNames() {
-    await this.page.waitForTimeout(500);
+    // Wait for at least one product name to be visible
+    await this.waitForVisible(this.productNames.first(), 10000);
     return await this.productNames.allTextContents();
   }
 
@@ -68,15 +71,14 @@ class CartPage {
   }
 
   async updateQuantity(index, quantity) {
-    await this.quantityInputs.nth(index).clear();
     await this.quantityInputs.nth(index).fill(String(quantity));
-    await this.updateButtons.nth(index).click();
-    await this.page.waitForTimeout(2000); // Wait for update
+    await this.click(this.updateButtons.nth(index));
+    await this.waitForPageLoad();
   }
 
   async removeItem(index) {
-    await this.removeButtons.nth(index).click();
-    await this.page.waitForTimeout(1500);
+    await this.click(this.removeButtons.nth(index));
+    await this.waitForDetached(this.removeButtons.nth(index));
   }
 
   async getProductCount() {
@@ -84,28 +86,28 @@ class CartPage {
   }
 
   async proceedToCheckout() {
-    await this.checkoutButton.click();
+    await this.click(this.checkoutButton);
   }
 
   async isCartEmpty() {
-  try {
-    // Check for empty message
-    const emptyMessage = this.page.locator('text=Your shopping cart is empty!');
-    const hasMessage = await emptyMessage.isVisible({ timeout: 3000 });
-    if (hasMessage) return true;
-    
-    // Alternative: check if product count is 0
-    const count = await this.getProductCount();
-    return count === 0;
-  } catch {
-    // If error, check product count
     try {
+      // Check for empty message
+      const emptyMessage = this.page.locator('text=Your shopping cart is empty!');
+      const hasMessage = await this.isVisible(emptyMessage, 3000);
+      if (hasMessage) return true;
+      
+      // Alternative: check if product count is 0
       const count = await this.getProductCount();
       return count === 0;
     } catch {
-      return false;
+      // If error, check product count
+      try {
+        const count = await this.getProductCount();
+        return count === 0;
+      } catch {
+        return false;
+      }
     }
-  }
 }
 }
 

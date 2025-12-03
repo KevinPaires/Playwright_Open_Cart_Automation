@@ -1,14 +1,8 @@
-const { test, expect } = require('@playwright/test');
-const { HomePage } = require('../pages/HomePage');
-const { ProductPage } = require('../pages/ProductPage');
-const { CartPage } = require('../pages/CartPage');
+const { test, expect } = require('./fixtures');
 
 test.describe('Shopping Cart Tests', () => {
 
-  test('add laptop to cart from category', async ({ page }) => {
-    const homePage = new HomePage(page);
-    const productPage = new ProductPage(page);
-    const cartPage = new CartPage(page);
+  test('add laptop to cart from category', async ({ homePage, productPage, cartPage }) => {
 
     // Navigate to Laptops category
     await homePage.goto();
@@ -31,11 +25,7 @@ test.describe('Shopping Cart Tests', () => {
     console.log('✅ Laptop added to cart successfully!');
   });
 
-  test('add multiple laptops to cart', async ({ page }) => {
-    const homePage = new HomePage(page);
-    const productPage = new ProductPage(page);
-    const cartPage = new CartPage(page);
-
+  test('add multiple laptops to cart', async ({ page, homePage, productPage, cartPage }) => {
     // Go to laptops
     await homePage.goto();
     await homePage.goToLaptops();
@@ -43,7 +33,7 @@ test.describe('Shopping Cart Tests', () => {
     // Add first laptop
     await productPage.clickProductByIndex(0);
     await productPage.addToCart();
-    await page.goto('/index.php?route=product/category&path=18'); // Back to laptops
+    await page.goto('/index.php?route=product/category&path=18'); 
 
     // Add second laptop
     await productPage.clickProductByIndex(1);
@@ -61,11 +51,7 @@ test.describe('Shopping Cart Tests', () => {
     console.log('✅ Multiple laptops added to cart!');
   });
 
-  test('view cart and verify products', async ({ page }) => {
-    const homePage = new HomePage(page);
-    const productPage = new ProductPage(page);
-    const cartPage = new CartPage(page);
-
+  test('view cart and verify products', async ({ page, homePage, productPage, cartPage }) => {
     // Add product
     await homePage.goto();
     await homePage.goToLaptops();
@@ -86,11 +72,7 @@ test.describe('Shopping Cart Tests', () => {
     console.log('✅ Cart displays correct products!');
   });
 
-  test('update product quantity in cart', async ({ page }) => {
-    const homePage = new HomePage(page);
-    const productPage = new ProductPage(page);
-    const cartPage = new CartPage(page);
-
+  test('update product quantity in cart', async ({ page, homePage, productPage, cartPage }) => {
     // Add product
     await homePage.goto();
     await homePage.goToLaptops();
@@ -110,11 +92,7 @@ test.describe('Shopping Cart Tests', () => {
     console.log('✅ Quantity updated to 3!');
   });
 
-  test('remove product from cart', async ({ page }) => {
-  const homePage = new HomePage(page);
-  const productPage = new ProductPage(page);
-  const cartPage = new CartPage(page);
-
+  test('remove product from cart', async ({ page, homePage, productPage, cartPage }) => {
   // Add product
   await homePage.goto();
   await homePage.goToLaptops();
@@ -130,7 +108,8 @@ test.describe('Shopping Cart Tests', () => {
 
   // Remove product
   await cartPage.removeItem(0);
-  await page.waitForTimeout(2000);
+  // Wait until cart header shows 0 items
+  await expect(cartPage.cartTotal).toHaveText(/0\s+item/, { timeout: 5000 });
 
   // Verify cart shows 0 items
   itemCount = await cartPage.getCartItemCount();
@@ -139,11 +118,7 @@ test.describe('Shopping Cart Tests', () => {
   console.log('✅ Product removed from cart!');
 });
 
-  test('calculate cart total for multiple items', async ({ page }) => {
-  const homePage = new HomePage(page);
-  const productPage = new ProductPage(page);
-  const cartPage = new CartPage(page);
-
+  test('calculate cart total for multiple items', async ({ page, homePage, productPage, cartPage }) => {
   // Add product with quantity 2
   await homePage.goto();
   await homePage.goToLaptops();
@@ -151,7 +126,8 @@ test.describe('Shopping Cart Tests', () => {
   await productPage.addToCartWithQuantity(2);
 
   // Wait a moment for cart to update
-  await page.waitForTimeout(1000);
+  // Wait until header shows 2 items
+  await expect(cartPage.cartTotal).toHaveText(/2\s+item/, { timeout: 5000 });
 
   // Check cart total in header - get full text
   const headerTotal = await cartPage.getCartTotal();
