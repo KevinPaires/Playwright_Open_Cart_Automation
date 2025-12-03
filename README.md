@@ -65,7 +65,7 @@ opencart-automation/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/opencart-automation.git
+   git clone https://github.com/KevinPaires/opencart-automation.git
    cd opencart-automation
    ```
 
