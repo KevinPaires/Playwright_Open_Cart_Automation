@@ -110,18 +110,15 @@ class AccountPage extends BasePage {
   }
 
   async getErrorMessage() {
-    // Return first error message found
     const errorText = await this.getText(this.fieldErrors);
     return errorText || '';
   }
 
   async isWarningMessageVisible() {
-    // Check if there are any field errors displayed
     return await this.fieldErrors.count() > 0;
   }
 
   async getWarningMessage() {
-    // Return field error message if present
     const errorText = await this.getText(this.fieldErrors);
     return errorText || '';
   }

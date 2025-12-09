@@ -1,6 +1,7 @@
 const base = require('@playwright/test');
 const { test: baseTest, expect } = base;
 const { HomePage } = require('../pages/HomePage');
+const { SearchPage } = require('../pages/SearchPage');
 const { ProductPage } = require('../pages/ProductPage');
 const { CartPage } = require('../pages/CartPage');
 const { AccountPage } = require('../pages/AccountPage');
@@ -11,6 +12,10 @@ const test = baseTest.extend({
   homePage: async ({ page }, use) => {
     const homePage = new HomePage(page);
     await use(homePage);
+  },
+  searchPage: async ({ page }, use) => {
+    const searchPage = new SearchPage(page);
+    await use(searchPage);
   },
   productPage: async ({ page }, use) => {
     const productPage = new ProductPage(page);

@@ -135,9 +135,6 @@ test.describe('Register Account Tests With Boundary Values, Positive and Negativ
     await accountPage.gotoAccount();
     const isLoggedIn = await accountPage.isLoggedIn();
     if (isLoggedIn) {
-      // AccountPage.logout() uses:
-      // - BasePage.click() for the logout link
-      // - BasePage.waitForPageLoad() to wait for navigation
       await accountPage.logout();
       const stillLoggedIn = await accountPage.isLoggedIn();
       expect(stillLoggedIn).toBeFalsy();

@@ -1,110 +1,79 @@
 # OpenCart Test Automation
 
-E-commerce test automation using **Playwright** and **JavaScript** with the **Page Object Model** pattern.
+Automated tests for OpenCart e-commerce platform using Playwright and JavaScript. Built with reusable page objects, smart waits (no hard waits), and currently includes 162 tests with more planned.
 
-## Quick Start
+## 🚀 Quick Setup
 
-### Prerequisites
-- Node.js v16+
-- Git
-
-### Setup
 ```bash
+# Clone and install
 git clone https://github.com/KevinPaires/opencart-automation.git
 cd opencart-automation
 npm install
 npx playwright install
 ```
 
-## Running Tests
+## ▶️ Run Tests
 
 ```bash
-# Run all tests
-npx playwright test
-
-# Run specific file
-npx playwright test tests/cart.spec.js
-
-# Run specific browser
-npx playwright test --project=chromium
-
-# Run with UI
-npx playwright test --ui
-
-# View report
-npx playwright show-report
+npx playwright test              # Run all tests
+npx playwright test --ui         # Run with UI mode
+npx playwright test cart.spec.js # Run specific test
+npx playwright show-report       # View last report
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-pages/                    # Page objects
-  ├── BasePage.js        # Base class with common methods
-  ├── HomePage.js
-  ├── ProductPage.js
-  ├── CartPage.js
-  ├── AccountPage.js
-  ├── SearchPage.js
-  └── CheckOutPage.js
-
-tests/                    # Test files
-  ├── fixtures.js        # Page object fixtures (extended test)
-  ├── cart.spec.js       # 6 tests
-  ├── account.spec.js    # 37 tests
-  ├── search.spec.js
-  └── homepage.spec.js
-
-tests/utils/
-  └── testDataGenerator.js  # Test data generators
+pages/          → Page objects (HomePage, CartPage, etc.)
+tests/          → Test files (*.spec.js)
+tests/utils/    → Test data generators
 ```
 
-## Test Coverage
+## ✅ What's Tested
 
-- **Account Tests** (37): Registration boundary tests, login, account management
-- **Cart Tests** (6): Add to cart, update quantity, remove, calculate total
-- **Search Tests**: Product search functionality
-- **Homepage Tests**: Navigation and content verification
+- **Account** - Registration, login, boundary values 
+- **Cart** - Add/remove items, quantity updates
+- **Search** - Product search and filters
+- **Checkout** - Guest and registered user flows
+- **Homepage** - Navigation and content
 
-## Fixtures
+## 🔧 Fixtures
 
-The `tests/fixtures.js` provides lazy-instantiated page object fixtures that are automatically injected into tests:
+Tests use pre-configured page objects:
 
 ```javascript
 const { test, expect } = require('./fixtures');
 
-test('example', async ({ accountPage, cartPage, productPage }) => {
-  // Page objects are automatically created and available
-  await accountPage.goto();
+test('add to cart', async ({ productPage, cartPage }) => {
   await productPage.addToCart();
-  // ...
+  await cartPage.verifyItemAdded();
 });
 ```
 
-Available fixtures:
-- `homePage` - Homepage interactions
-- `searchPage` - Search functionality
-- `productPage` - Product operations
-- `cartPage` - Shopping cart operations
-- `accountPage` - Account and registration
-- `checkOutPage` - Checkout flow
+## 🌐 Test Site
 
-## Test Website
+[OpenCart Demo](https://opencart.abstracta.us/)
 
-[OpenCart Abstracta Demo](https://opencart.abstracta.us/) - Public demo site
+## ⚡ Key Features
 
-## Key Features
+- **Page Object Model** - Reusable, maintainable code structure
+- **Smart Waits** - No hard waits, uses Playwright's auto-waiting
+- **Boundary Testing** - Comprehensive input validation (1-32 characters)
+- **Cross-Browser** - Runs on Chromium, Firefox, and WebKit
+- **Parallel Execution** - Fast test runs with parallel workers
+- **Rich Reports** - HTML reports with screenshots on failure
+- **162 Tests** - Growing test suite covering critical user flows
 
-- Page Object Model for maintainable code
-- Comprehensive boundary testing (1-32 characters)
-- Cross-browser testing (Chromium, Firefox, WebKit)
-- Parallel test execution
-- HTML test reports with screenshots
-- Configurable selectors and timeouts
+## 💡 Tips
 
-## Troubleshooting
+- Use `--headed` to see browser: `npx playwright test --headed`
+- Debug mode: `npx playwright test --debug`
+- Specific browser: `npx playwright test --project=chromium`
 
-**Tests timeout?** Check network connection or increase timeouts in `playwright.config.js`
+## 🐛 Common Issues
 
-**Browser won't launch?** Run `npx playwright install --force`
+**Timeout errors?** Increase timeout in `playwright.config.js`
 
-**Tests fail in CI?** Run in headless mode: `npx playwright test`
+**Browsers not installed?** Run `npx playwright install`
+
+**Need help?** Check the [Playwright docs](https://playwright.dev/)

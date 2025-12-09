@@ -1,15 +1,13 @@
-const { test, expect } = require('@playwright/test');
-const { HomePage } = require('../pages/HomePage');
+const { test, expect } = require('./fixtures');
 
 test.describe('Homepage Tests', () => {
   
-  test('homepage loads successfully', async ({ page }) => {
-    const homePage = new HomePage(page);
+  test('homepage loads successfully', async ({ homePage }) => {
     
     await homePage.goto();
     
     // Verify 
-    await expect(page).toHaveTitle(/Your Store/);
+    await expect(homePage.page).toHaveTitle(/Your Store/);
     await expect(homePage.logo).toBeVisible();
     await expect(homePage.searchInput).toBeVisible();
     await expect(homePage.myAccountDropdown).toBeVisible();
@@ -17,8 +15,7 @@ test.describe('Homepage Tests', () => {
     console.log('✅ Homepage loaded successfully!');
   });
 
-  test('featured products are displayed', async ({ page }) => {
-    const homePage = new HomePage(page);
+  test('featured products are displayed', async ({ homePage }) => {
     
     await homePage.goto();
     

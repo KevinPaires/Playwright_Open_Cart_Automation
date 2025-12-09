@@ -39,9 +39,6 @@ class SearchPage extends BasePage {
     }
   }
 
-  async getNoResultsMessage() {
-    return await this.getText(this.page.locator('#content'));
-  }
 
   async searchAgain(searchTerm) {
     // Clear and fill the first search input

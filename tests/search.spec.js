@@ -1,18 +1,14 @@
-const { test, expect } = require('@playwright/test');
-const { HomePage } = require('../pages/HomePage');
-const { SearchPage } = require('../pages/SearchPage');
+const { test, expect } = require('./fixtures');
+
 
 test.describe('Search Functionality Tests', () => {
   
-  test('search for iPhone returns results', async ({ page }) => {
-    const homePage = new HomePage(page);
-    const searchPage = new SearchPage(page);
+  test('search for iPhone returns results', async ({ homePage, searchPage }) => {
     
+    const productName = 'iPhone';
     await homePage.goto();
-    await homePage.searchProduct('iPhone');
-    
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
+    await homePage.searchProduct(productName);
+    await homePage.waitForPageLoad();
     
     const resultsCount = await searchPage.getResultsCount();
     expect(resultsCount).toBeGreaterThan(0);
@@ -28,14 +24,12 @@ test.describe('Search Functionality Tests', () => {
     console.log(`Found ${resultsCount} iPhone products!`);
   });
 
-  test('search for MacBook returns results', async ({ page }) => {
-    const homePage = new HomePage(page);
-    const searchPage = new SearchPage(page);
+  test('search for MacBook returns results', async ({ homePage, searchPage }) => {
     
+    const productName = 'MacBook';
     await homePage.goto();
-    await homePage.searchProduct('MacBook');
-    
-    await page.waitForLoadState('networkidle');
+    await homePage.searchProduct(productName);
+    await homePage.waitForPageLoad();
     
     const resultsCount = await searchPage.getResultsCount();
     expect(resultsCount).toBeGreaterThan(0);
@@ -51,24 +45,20 @@ test.describe('Search Functionality Tests', () => {
     console.log(`Found ${resultsCount} MacBook products!`);
   });
 
-  test('search for non-existent product shows message', async ({ page }) => {
-    const homePage = new HomePage(page);
-    const searchPage = new SearchPage(page);
+  test('search for non-existent product shows message', async ({ homePage, searchPage }) => {
     
+    const productName = 'xyznonexistentproduct123';
     await homePage.goto();
-    await homePage.searchProduct('xyznonexistentproduct123');
+    await homePage.searchProduct(productName);
     
-    await page.waitForLoadState('networkidle');
-    
-    // Check if message appears or results are empty
+    await homePage.waitForPageLoad();
     const resultsCount = await searchPage.getResultsCount();
     expect(resultsCount).toBe(0);
     
     console.log('No results found as expected!');
   });
 
-  test('empty search shows message or all products', async ({ page }) => {
-    const homePage = new HomePage(page);
+  test('empty search shows message or all products', async ({ homePage, page }) => {
     
     await homePage.goto();
     await homePage.searchButton.click();
@@ -78,20 +68,20 @@ test.describe('Search Functionality Tests', () => {
     console.log('Empty search handled!');
   });
 
-  test('can search from search results page', async ({ page }) => {
-    const homePage = new HomePage(page);
-    const searchPage = new SearchPage(page);
+  test('can search from search results page', async ({ homePage, searchPage }) => {
     
+    const productName1 = 'iPhone';
+    const productName2 = 'MacBook';
     // First search
     await homePage.goto();
-    await homePage.searchProduct('iPhone');
-    await page.waitForLoadState('networkidle');
+    await homePage.searchProduct(productName1);
+    await homePage.waitForPageLoad();
     
     const firstCount = await searchPage.getResultsCount();
     expect(firstCount).toBeGreaterThan(0);
     
     // Search again from results page
-    await searchPage.searchAgain('MacBook');
+    await searchPage.searchAgain(productName2);
     
     const secondCount = await searchPage.getResultsCount();
     expect(secondCount).toBeGreaterThan(0);
